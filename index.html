@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="th"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>IELTS Speaking Practice</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);--bg:#faf8f3;--card:#fff;--tx:#1d1d1b;--mu:#6b6b66;--ac:#c2410c;--acx:#fff;--bd:#e4e2da}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171716;--card:#232321;--tx:#f0efe9;--mu:#a3a39b;--ac:#fb923c;--acx:#1a1a18;--bd:#3a3a36}}
+:root[data-theme="dark"]{--bg:#171716;--card:#232321;--tx:#f0efe9;--mu:#a3a39b;--ac:#fb923c;--acx:#1a1a18;--bd:#3a3a36}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Sarabun,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px}
+h1{font-size:20px;margin:4px 0 12px}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tabs button{flex:1;padding:10px 4px;border:1px solid var(--bd);background:var(--card);color:var(--tx);border-radius:10px;font:inherit;font-weight:600;cursor:pointer}
+.tabs button.on{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:16px;margin-bottom:12px}
+.card h2{font-size:17px;margin:0 0 8px}
+.card ul{margin:6px 0 0;padding-left:20px}
+.mu{color:var(--mu);font-size:14px}
+.btn{padding:11px 16px;border-radius:10px;border:1px solid var(--bd);background:var(--card);color:var(--tx);font:inherit;font-weight:600;cursor:pointer}
+.btn.pri{background:var(--ac);color:var(--acx);border-color:var(--ac)}
+.btn.rec{background:#dc2626;color:#fff;border-color:#dc2626}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.timer{font-size:28px;font-weight:700;font-variant-numeric:tabular-nums}
+audio{width:100%;margin-top:10px}
+.band{font-size:44px;font-weight:800;color:var(--ac);line-height:1}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.grid div{border:1px solid var(--bd);border-radius:10px;padding:8px 10px}
+.grid b{display:block;font-size:20px}
+.tx{background:var(--bg);border-radius:8px;padding:8px 10px;font-size:14px;margin-top:8px;max-height:140px;overflow:auto}
+</style></head><body><main>
+<h1>🎤 IELTS Speaking Practice</h1>
+<div class="tabs" id="tabs"></div>
+<div class="mu" id="cnt" style="margin:0 0 12px"></div>
+<div class="card"><div id="topic"></div>
+<div class="row" style="margin-top:12px"><button class="btn pri" id="rnd">🎲 สุ่มหัวข้อใหม่</button><button class="btn" id="prep" style="display:none">⏳ เตรียมตัว 1 นาที</button></div></div>
+<div class="card"><div class="row" style="justify-content:space-between"><div><div class="timer" id="tm">00:00</div><div class="mu" id="tgt"></div></div>
+<button class="btn pri" id="rec">● เริ่มอัดเสียง</button></div>
+<audio id="au" controls style="display:none"></audio><div class="mu" id="msg" style="margin-top:8px"></div>
+<textarea id="mt" rows="5" placeholder="ข้อความที่ถอดจากเสียงจะขึ้นที่นี่แบบสด ๆ แก้ไขหรือพิมพ์เองได้ (ใช้ปุ่มไมค์บนคีย์บอร์ดมือถือพูดลงช่องนี้ก็ได้)" style="width:100%;margin-top:10px;font:inherit;background:var(--bg);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px"></textarea>
+<div class="row" style="margin-top:8px"><button class="btn pri" id="bv">ประเมินจากเสียง</button><button class="btn" id="bt">ประเมินจากข้อความ</button></div>
+<div class="mu" style="margin-top:6px">“จากเสียง” ใช้ผลถอดเสียงตอนอัด และความชัดของเสียงช่วยให้คะแนนการออกเสียง · “จากข้อความ” ใช้ข้อความในช่อง (แก้ไขได้ แต่ไม่ตัดสินการออกเสียง)</div></div>
+<div class="card" id="res" style="display:none"></div>
+<p class="mu">คะแนนเป็นการ “ประมาณ” จากข้อความที่ระบบถอดเสียง (ความเร็วพูด, คำฟุ่มเฟือย, ความหลากหลายคำ, โครงสร้างประโยค, ความชัดของเสียง) ไม่ใช่คะแนนจริงของ IELTS ใช้เปรียบเทียบพัฒนาการของตัวเอง แนะนำให้ใช้ Chrome</p>
+</main>
+<script>
+const P1=[["Hometown",["Where is your hometown?","What do you like most about it?","Has it changed much in recent years?","Would you recommend it to tourists?"]],
+["Work or Studies",["Do you work or are you a student?","Why did you choose this job or subject?","What is the most interesting part of it?","Would you like to change it in the future?"]],
+["Food",["What kind of food do you like?","Do you cook at home?","Has your diet changed since you were a child?","What is a traditional dish in your country?"]],
+["Hobbies",["What do you do in your free time?","Did you have different hobbies as a child?","Do you prefer doing hobbies alone or with others?","Is there a hobby you want to try?"]],
+["Technology",["How often do you use your phone?","What apps do you use most?","Do you think people depend too much on technology?","How has technology changed your daily life?"]],
+["Weather",["What is the weather like in your city?","What kind of weather do you like?","Does weather affect your mood?","Do you check the forecast every day?"]],
+["Travel",["Do you like travelling?","Where did you go on your last trip?","Do you prefer traveling alone or in a group?","Where would you like to go next?"]],
+["Music",["What music do you listen to?","Do you play any instrument?","Has your taste in music changed?","Do you enjoy going to live concerts?"]],
+["Family",["Do you have a big family?","Who are you closest to in your family?","What do you usually do together?","Do you think family is more important than friends?"]],
+["Friends",["Do you have many friends?","How do you usually meet new people?","What makes a good friend?","Do you keep in touch with old friends?"]],
+["Home",["Do you live in a house or an apartment?","What is your favourite room?","Would you like to move in the future?","How could you make your home better?"]],
+["Shopping",["Do you enjoy shopping?","Do you prefer online or in-store shopping?","What was the last thing you bought?","Do you usually plan what to buy?"]],
+["Transport",["How do you usually get to work or school?","Is public transport good in your city?","Do you prefer driving or being a passenger?","How could traffic be improved?"]],
+["Sports and Exercise",["Do you play any sports?","Did you do more sport as a child?","Do you prefer exercising alone or in a team?","Is sport popular in your country?"]],
+["Reading",["Do you enjoy reading?","What kind of books do you like?","Do you prefer paper books or e-books?","Did you read more when you were younger?"]],
+["Sleep and Daily Routine",["What is your daily routine like?","What time do you usually go to bed?","Are you a morning person?","What would you change about your routine?"]],
+["Pets",["Do you have any pets?","Are pets popular in your country?","Why do some people keep pets?","Would you like to have a pet in the future?"]],
+["Social Media",["Do you use social media?","Which platform do you use most?","Do you think it is good for friendships?","Has social media changed how people communicate?"]],
+["Clothes",["What kind of clothes do you usually wear?","Do you follow fashion trends?","Do you buy clothes online?","Do people dress differently for work in your country?"]],
+["Neighbours",["Do you know your neighbours?","How often do you talk to them?","Do you think neighbours are important?","Has the relationship between neighbours changed over time?"]],
+["Money",["Do you save money or spend it?","What do you usually spend money on?","Did you get pocket money as a child?","Do you think money brings happiness?"]],
+["Festivals",["What is the most popular festival in your country?","How do you usually celebrate it?","Did you celebrate differently as a child?","Do you think festivals are still important?"]]];
+const P2=[
+{t:"Describe a person who has influenced you.",b:["who this person is","how you know them","what they did","and explain why they influenced you"],q:["What qualities make someone a good role model?","Do children learn more from parents or teachers?","Are celebrities good role models today?"]},
+{t:"Describe a place you visited that you really liked.",b:["where it is","when you went there","what you did there","and explain why you liked it"],q:["Why do people like to travel abroad?","Does tourism harm or help local communities?","How might travel change in the future?"]},
+{t:"Describe a useful skill you learned.",b:["what the skill is","when and how you learned it","who helped you","and explain why it is useful"],q:["Which skills should schools teach?","Is it better to learn skills online or in a classroom?","Will some skills become unnecessary in the future?"]},
+{t:"Describe a piece of technology you use often.",b:["what it is","how long you have had it","what you use it for","and explain why it is important to you"],q:["How has technology changed the way people communicate?","Do older people find technology harder to use?","Should children limit their screen time?"]},
+{t:"Describe a memorable meal you had.",b:["where you had it","who you were with","what you ate","and explain why it was memorable"],q:["Why are family meals important?","Is fast food becoming more popular? Why?","How can people be encouraged to eat healthily?"]},
+{t:"Describe a time when you helped someone.",b:["who you helped","what the problem was","how you helped","and explain how you felt about it"],q:["Why do some people volunteer?","Should helping others be taught at school?","Is it the government's or individuals' job to help the poor?"]},
+{t:"Describe a book or film that made an impression on you.",b:["what it is about","when you read or saw it","who recommended it","and explain why it impressed you"],q:["Do people read less than in the past?","Can films influence society's opinions?","Are e-books better than paper books?"]},
+{t:"Describe a goal you want to achieve in the future.",b:["what the goal is","when you want to achieve it","what you need to do","and explain why it matters to you"],q:["Why is it important to set goals?","Should young people plan their careers early?","What makes some people more determined than others?"]},
+{t:"Describe a time when you were very busy.",b:["when it was","what you had to do","why you were so busy","and explain how you felt about it"],q:["Do people today have enough free time?","How can people manage their time better?","Is being busy always a bad thing?"]},
+{t:"Describe a public place you enjoy going to.",b:["where it is","how often you go there","what you do there","and explain why you like it"],q:["Why are public spaces important in cities?","Should governments build more parks?","How do public places bring people together?"]},
+{t:"Describe a gift you gave or received.",b:["what the gift was","who it was for or from","what the occasion was","and explain why it was special"],q:["Why do people give gifts on special occasions?","Are handmade gifts better than bought ones?","Has gift giving changed over time?"]},
+{t:"Describe a difficult decision you made.",b:["what the decision was","when you made it","what made it difficult","and explain what happened afterwards"],q:["Should people make decisions alone or ask for advice?","Are young people good at making decisions?","How do decisions affect a person's future?"]},
+{t:"Describe an event in your country that people celebrate.",b:["what the event is","when it takes place","what people do","and explain why it is important"],q:["Are traditional festivals still important today?","Do celebrations bring families closer?","Should festivals be shared with tourists?"]},
+{t:"Describe a healthy habit you have.",b:["what the habit is","when you started it","how often you do it","and explain how it benefits you"],q:["Why do some people find it hard to stay healthy?","Who should teach children healthy habits?","Is healthcare the government's responsibility?"]},
+{t:"Describe a building you find interesting.",b:["where it is","what it looks like","what it is used for","and explain why you find it interesting"],q:["Should old buildings be preserved or replaced?","How does architecture affect people's mood?","What makes a city attractive to live in?"]},
+{t:"Describe a teacher who taught you something important.",b:["who the teacher was","what they taught you","how they taught","and explain why it was important"],q:["What makes a good teacher?","Will technology replace teachers one day?","Is school the best place to learn life skills?"]},
+{t:"Describe a time when you had to wait for something.",b:["what you were waiting for","where you were","how long you waited","and explain how you felt"],q:["Why are people less patient nowadays?","Which places make people wait the longest?","Can waiting ever be a good thing?"]},
+{t:"Describe a piece of clothing you like to wear.",b:["what it looks like","where you got it","when you wear it","and explain why you like it"],q:["Do people care too much about fashion?","Should schools require uniforms?","How has fashion changed in your country?"]},
+{t:"Describe a photograph that is special to you.",b:["what the photo shows","when and where it was taken","who took it","and explain why it is special"],q:["Why do people take so many photos today?","Are printed photos still valuable?","Does taking photos spoil the moment?"]},
+{t:"Describe a sport or activity you would like to try.",b:["what it is","where you would try it","who you would do it with","and explain why you want to try it"],q:["Why do some people prefer extreme sports?","Should schools make sport compulsory?","Is professional sport too commercial?"]},
+{t:"Describe something you bought that you are happy with.",b:["what it is","where and when you bought it","how you chose it","and explain why you are happy with it"],q:["Why do people buy things they do not need?","Does advertising influence what people buy?","Is online shopping better than shopping in stores?"]},
+{t:"Describe a natural place you enjoyed visiting.",b:["where it is","how you got there","what you did there","and explain why you enjoyed it"],q:["Why do people enjoy spending time in nature?","Should natural places be protected from tourism?","Do city people spend enough time outdoors?"]}];
+const $=id=>document.getElementById(id);
+let part=1,cur=null,mr=null,sr=null,chunks=[],tInt=null,t0=0,fin="",confs=[],recording=false,pInt=null,intr="",lastSec=0,ac=null,aInt=null,aud=null;
+const TARGET={1:20,2:90,3:30};
+const TIT={1:"Part 1 · สัมภาษณ์",2:"Part 2 · พูดคนเดียว (Cue Card)",3:"Part 3 · อภิปราย"};
+const Q1=P1.reduce((a,t)=>a+t[1].length,0),Q3=P2.reduce((a,c)=>a+c.q.length,0),CN={1:P1.length,2:P2.length,3:Q3};
+$("tabs").innerHTML=[1,2,3].map(p=>`<button data-p="${p}">Part ${p} (${CN[p]})</button>`).join("");
+$("cnt").textContent=`Part 1: ${P1.length} หัวข้อ (${Q1} คำถาม) · Part 2: ${P2.length} Cue Card · Part 3: ${Q3} คำถาม (${P2.length} ธีม)`;
+$("tabs").onclick=e=>{const p=e.target.dataset.p;if(p){part=+p;pick()}};
+$("rnd").onclick=pick;
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+function pick(){
+ if(recording)return;
+ document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("on",+b.dataset.p===part));
+ $("prep").style.display=part===2?"":"none";clearInterval(pInt);
+ let h=`<div class="mu">${TIT[part]}</div>`;
+ if(part===1){cur=rnd(P1);h+=`<h2>Topic: ${cur[0]}</h2><ul>${cur[1].map(q=>`<li>${q}</li>`).join("")}</ul>`}
+ else if(part===2){cur=rnd(P2);h+=`<h2>${cur.t}</h2><div class="mu">You should say:</div><ul>${cur.b.map(q=>`<li>${q}</li>`).join("")}</ul>`}
+ else{const c=rnd(P2);cur=c;h+=`<h2>Discussion</h2><div class="mu">Theme: ${c.t.replace("Describe ","")}</div><ul>${c.q.map(q=>`<li>${q}</li>`).join("")}</ul>`}
+ h+=vocHtml();$("topic").innerHTML=h;
+ $("tgt").textContent=part===2?"เป้าหมาย: พูด 1–2 นาที":part===1?"เป้าหมาย: ตอบข้อละ ~20–30 วินาที":"เป้าหมาย: ตอบข้อละ ~30–45 วินาที";
+ $("tm").textContent="00:00";$("au").style.display="none";$("res").style.display="none";$("msg").textContent="";$("mt").value="";fin="";intr="";confs=[];lastSec=0;aud=null;
+}
+$("prep").onclick=()=>{clearInterval(pInt);let s=60;const f=()=>{$("tm").textContent="เตรียม "+fmt(s);if(s--<=0){clearInterval(pInt);$("tm").textContent="00:00";$("msg").textContent="หมดเวลาเตรียม เริ่มพูดได้เลย!"}};f();pInt=setInterval(f,1000)};
+const fmt=s=>String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0");
+$("rec").onclick=async()=>{recording?stop():await start()};
+$("bv").onclick=()=>{if(recording)return;show(analyze((fin+" "+intr).trim(),lastSec||null,true))};
+$("bt").onclick=()=>{if(recording)return;show(analyze($("mt").value.trim(),lastSec||null,false))};
+async function start(){
+ clearInterval(pInt);
+ try{
+  const st=await navigator.mediaDevices.getUserMedia({audio:true});
+  aud=null;try{const AC=window.AudioContext||window.webkitAudioContext;ac=new AC();ac.resume&&ac.resume();const an=ac.createAnalyser();an.fftSize=1024;ac.createMediaStreamSource(st).connect(an);const bf=new Float32Array(an.fftSize);aud={tot:0,sil:0,run:0,pauses:0,on:false};
+   aInt=setInterval(()=>{an.getFloatTimeDomainData(bf);let q=0;for(let k=0;k<bf.length;k++)q+=bf[k]*bf[k];const rms=Math.sqrt(q/bf.length);
+    if(rms>=0.02){aud.on=true;aud.run=0}else if(aud.on){aud.run+=100;if(aud.run===600)aud.sil+=600;else if(aud.run>600)aud.sil+=100;if(aud.run===1200)aud.pauses++}
+    if(aud.on)aud.tot+=100},100)}catch(_){aud=null}
+  chunks=[];fin="";confs=[];intr="";$("mt").value="";$("msg").textContent="";
+  mr=new MediaRecorder(st);mr.ondataavailable=e=>chunks.push(e.data);
+  mr.onstop=()=>{st.getTracks().forEach(t=>t.stop());const b=new Blob(chunks,{type:mr.mimeType});$("au").src=URL.createObjectURL(b);$("au").style.display="block"};
+  mr.start();
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(SR){sr=new SR();sr.lang="en-US";sr.continuous=true;sr.interimResults=true;sr.onerror=e=>{if(e.error!=="no-speech")$("msg").textContent="ตัวถอดเสียงแจ้งว่า: "+e.error};
+   sr.onresult=e=>{let it="";for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal){fin+=" "+e.results[i][0].transcript;if(e.results[i][0].confidence>0)confs.push(e.results[i][0].confidence)}else it+=e.results[i][0].transcript}intr=it;$("mt").value=(fin+" "+intr).trim()};
+   sr.onend=()=>{if(recording)try{sr.start()}catch(_){}};sr.start()}
+  else $("msg").textContent="เบราว์เซอร์นี้ไม่รองรับการถอดเสียง จึงประเมินคะแนนไม่ได้ (อัดฟังได้ปกติ)";
+  recording=true;t0=Date.now();$("rec").textContent="■ หยุดอัด";$("rec").className="btn rec";$("res").style.display="none";
+  tInt=setInterval(()=>$("tm").textContent=fmt(Math.floor((Date.now()-t0)/1000)),250);
+ }catch(e){$("msg").textContent="เปิดไมค์ไม่ได้ (รหัสข้อผิดพลาด: "+(e&&e.name||"unknown")+") ถ้าเป็น NotAllowedError หรือ TypeError แปลว่าหน้านี้ถูกบล็อกไมค์ในกรอบที่ฝังอยู่ ลองเปิดเป็นไฟล์ในเครื่องหรือแท็บแยกแทน"}
+}
+function stop(){
+ recording=false;clearInterval(tInt);const sec=(Date.now()-t0)/1000;
+ mr.stop();if(sr)sr.stop();clearInterval(aInt);if(aud){if(aud.run>=1200)aud.pauses--;if(aud.run>=600)aud.sil-=aud.run;aud.tot-=aud.run}try{ac&&ac.close()}catch(_){}
+ $("rec").textContent="● อัดอีกครั้ง";$("rec").className="btn pri";
+ lastSec=sec;setTimeout(()=>{$("mt").value=(fin+" "+intr).trim()||$("mt").value;$("msg").textContent="หยุดอัดแล้ว: ตรวจข้อความในช่อง แก้ไขได้ แล้วเลือกวิธีประเมิน"},1200);
+}
+const r5=x=>x==null?null:Math.round(Math.min(8,Math.max(4,x))*2)/2;
+const norm=s=>" "+s.toLowerCase().replace(/[^a-z' ]/g," ").replace(/\s+/g," ").trim()+" ";
+const esc=s=>s.replace(/[&<>]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;"}[c]));
+const chip=(t,on)=>`<span style="display:inline-block;border:1px solid var(--bd);border-radius:999px;padding:2px 10px;margin:3px 4px 0 0;font-size:13px;${on?"background:var(--ac);color:var(--acx);border-color:var(--ac)":""}">${t}</span>`;
+const SYN={good:["beneficial","excellent","fantastic","valuable"],bad:["terrible","poor","harmful","awful"],big:["huge","enormous","significant","substantial"],very:["extremely","incredibly","particularly","highly"],really:["genuinely","truly","absolutely"],nice:["pleasant","delightful","charming","lovely"],thing:["aspect","factor","item","matter"],happy:["delighted","thrilled","over the moon","content"],sad:["upset","disappointed","down in the dumps","heartbroken"],important:["essential","crucial","vital","significant"],interesting:["fascinating","intriguing","captivating","engaging"],"a lot of":["plenty of","a great deal of","a large number of","loads of"],many:["numerous","a wide range of","plenty of"],get:["obtain","receive","acquire","gain"],make:["create","produce","build","generate"],help:["assist","support","benefit","lend a hand"],easy:["straightforward","effortless","manageable"],hard:["challenging","demanding","tough","tricky"],fun:["entertaining","enjoyable","a blast"],tired:["exhausted","worn out","drained"],beautiful:["stunning","gorgeous","picturesque","breathtaking"],delicious:["mouth-watering","flavourful","scrumptious"],famous:["well-known","renowned","iconic"],expensive:["pricey","costly","overpriced"],cheap:["affordable","inexpensive","budget-friendly"],busy:["hectic","packed","tied up"],boring:["dull","tedious","monotonous","uninspiring"],problem:["issue","challenge","difficulty","drawback"],people:["individuals","locals","the public"],think:["I reckon","I believe","it seems to me"],want:["would like to","be keen to","hope to"]};
+const BASIC=["good","bad","big","very","really","nice","thing","happy","important","interesting","a lot of","fun","beautiful","boring","hard","easy"];
+const FILLTIP=["Well, let me think…","That's an interesting question…","How can I put it…","Let me see…","To be honest…"];
+const CON={"เหตุผล":["because","since","due to","owing to","that's why"],"ขัดแย้ง":["however","although","though","whereas","on the other hand","even though","despite","in spite of"],"ตัวอย่าง":["for example","for instance","such as"],"ลำดับ":["firstly","first of all","after that","afterwards","eventually","in the end","meanwhile","at first"],"ผลลัพธ์":["therefore","as a result","consequently"],"แสดงความเห็น":["in my opinion","personally","i would say","to be honest","as far as i'm concerned","i reckon","i believe"],"เพิ่มเติม":["besides","moreover","in addition","what's more","furthermore","not only"]};
+const VOC={people:["a role model","reliable","supportive","easy-going","look up to","get along with","have a lot in common","keep in touch"],places:["breathtaking","bustling","off the beaten track","a tourist hotspot","picturesque","laid-back","worth a visit","a peaceful atmosphere"],food:["mouth-watering","a staple dish","comfort food","home-cooked","a balanced diet","savoury","spicy","an acquired taste"],tech:["user-friendly","cutting-edge","glued to my screen","a handy tool","keep up with","rely on","time-consuming","go viral"],health:["stay in shape","a healthy lifestyle","burn off energy","work out","keep fit","a hectic schedule","recharge","boost my mood"],leisure:["unwind","pass the time","be into","a page-turner","thought-provoking","catch up on","a great way to relax","gripping"],shopping:["a bargain","splurge on","worth every penny","on a tight budget","browse","impulse buy","good value for money","sentimental value"],general:["to be honest","it depends on","as far as I'm concerned","on the whole","in the long run","from my perspective","a big part of my life","make a difference"]};
+const ERR=[[/ i am agree /,"“I am agree” → <b>I agree</b>"],[/ (he|she|it) (don't|have) /,"he/she/it don't|have → <b>doesn't / has</b>"],[/ (he|she) (go|like|want|live|work|think|say) /,"he/she + กริยาไม่เติม s → <b>goes, likes, wants…</b>"],[/ people (is|was) /,"“people is/was” → <b>people are / were</b>"],[/ (peoples|informations|advices|furnitures|researches) /,"peoples / informations / advices → <b>people / information / advice</b>"],[/ i very (like|love|enjoy) /,"“I very like” → <b>I really like / I like … very much</b>"],[/ more (better|easier|bigger|faster|cheaper) /,"“more better” → <b>better</b>"],[/ did (went|saw|had|ate|came|made) /,"“did went” → <b>did go / went</b>"],[/ many (money|time|water|traffic) /,"“many money/time” → <b>much money/time</b>"],[/ (discuss|mention|explain) about /,"“discuss about” → <b>discuss …</b> (ไม่ต้องมี about)"]];
+const catOf=s=>{s=s.toLowerCase();return /person|teacher|friend|family|neighbour|helped|influenc/.test(s)?"people":/place|travel|trip|visit|city|building|hometown|home|transport|natural/.test(s)?"places":/food|meal|cook|eat/.test(s)?"food":/technolog|phone|app|social|media/.test(s)?"tech":/health|sport|exercise|sleep|routine/.test(s)?"health":/book|film|music|hobb|read|photo|festival|celebrat|pets/.test(s)?"leisure":/shop|money|bought|gift|clothes|clothing/.test(s)?"shopping":"general"};
+const topicVoc=()=>{const c=catOf(part===1?cur[0]:cur.t);return[...VOC[c],...(c==="general"?[]:VOC.general.slice(0,4))]};
+function vocHtml(){return `<details style="margin-top:10px"><summary class="mu">💡 คำศัพท์/วลีแนะนำสำหรับหัวข้อนี้</summary><div>${topicVoc().map(v=>chip(v,false)).join("")}</div></details>`}
+function analyze(text,sec,useConf){
+ const low=norm(text),w=low.trim().split(" ").filter(Boolean),n=w.length;
+ if(n<10)return{err:"ข้อความสั้นเกินไป (อย่างน้อย ~10 คำ) ลองพูดให้ยาวขึ้น หรือพิมพ์/พูดลงช่องข้อความแล้วกดประเมินจากข้อความ"};
+ const has=p=>low.includes(norm(p)),cnt=p=>low.split(norm(p)).length-1;
+ const fl={};["um","uh","er","erm","hmm","ah"].forEach(f=>{const c=w.filter(x=>x===f).length;if(c)fl[f]=c});
+ ["you know","i mean","kind of","sort of"].forEach(f=>{const c=cnt(f);if(c)fl[f]=c});
+ const fill=Object.values(fl).reduce((a,b)=>a+b,0),rep=(low.match(/ (\w+) \1 /g)||[]).length,why={};
+ let F=null,wpm=null,dur=null,ppm=null;
+ if(sec!=null){
+  dur=(aud&&aud.tot>3000)?aud.tot/1000:sec;wpm=n/(dur/60);
+  F=wpm>=130?6.5:wpm>=110?6:wpm>=90?5.5:wpm>=70?5:wpm>=50?4.5:4;
+  const fr=fill/n*100;F-=Math.min(1.5,fr*0.2)+Math.min(0.5,rep*0.15);
+  if(aud)ppm=aud.pauses/(dur/60),F-=Math.min(1.5,ppm*0.25);
+  const ratio=sec/TARGET[part];F-=ratio<0.5?1.5:ratio<0.8?0.75:0;
+  if(wpm>=120&&fr<2&&ratio>=1&&(ppm==null||ppm<1.5))F+=0.5;
+  why.F=`${Math.round(wpm)} wpm · หยุดนาน ${aud?aud.pauses:"?"} ครั้ง · อึกอัก ${fill}`;
+ }else why.F="ไม่มีเสียงอัด จึงไม่ประเมิน";
+ const uniq=new Set(w).size,rt=uniq/Math.sqrt(n),adv=w.filter(x=>x.length>=8).length/n;
+ let bas=0;BASIC.forEach(k=>bas+=cnt(k));
+ const syn=Object.keys(SYN).map(k=>[k,cnt(k)]).filter(x=>x[1]>=2).sort((a,b)=>b[1]-a[1]);
+ const pool=[].concat(...Object.values(VOC),...Object.values(SYN)),good=new Set(pool.filter(has)).size;
+ const L=4.5+Math.min(1.3,Math.max(0,(rt-4)*0.4))+Math.min(1.2,adv*8)+Math.min(1.2,good*0.2)-Math.min(1.2,bas/n*100*0.12);
+ why.L=`คำไม่ซ้ำ ${Math.round(uniq/n*100)}% · คำ/วลีเด่น ${good} · คำพื้นฐานซ้ำ ${bas}`;
+ const cg={};let dc=0;
+ for(const g in CON){cg[g]=CON[g].filter(has);dc+=cg[g].length}
+ const kinds=[/ (have|has|had) (been|\w+ed|gone|done|seen|taken|made|become|got) /,/ if .{3,60} (would|could) /,/ (is|are|was|were|been|being) \w+ed /,/ (which|who|whom|whose) /].filter(re=>re.test(low)).length;
+ const errs=ERR.filter(e=>e[0].test(low)).map(e=>e[1]);
+ const G=4.5+Math.min(1.2,dc*0.2)+kinds*0.25-Math.min(1.5,errs.length*0.3);
+ why.G=`คำเชื่อมต่างกัน ${dc} · โครงสร้างซับซ้อน ${kinds}/4 · ข้อผิดที่จับได้ ${errs.length}`;
+ const c=(useConf&&confs.length)?confs.reduce((a,b)=>a+b,0)/confs.length:null;
+ const P=c==null?null:c>=.95?6.5:c>=.9?6:c>=.85?5.5:c>=.78?5:4.5;
+ why.P=c==null?"ไม่มีข้อมูลจากเสียง จึงไม่ประเมิน":`ความมั่นใจตัวถอดเสียง ${Math.round(c*100)}%`;
+ const s={F:r5(F),L:r5(L),G:r5(G),P:r5(P)},vals=Object.values(s).filter(v=>v!=null);
+ let o=Math.round(vals.reduce((a,b)=>a+b,0)/vals.length*2)/2,capNote="";
+ const cap=n<30?4.5:n<60?5.5:n<100?6.5:7.5;
+ if(o>cap){o=cap;capNote=`พูดแค่ ${n} คำ จึงจำกัดเพดาน ${cap}`}
+ const talk=[];
+ if(wpm!=null)talk.push(`ความเร็ว ${Math.round(wpm)} คำ/นาที — ${wpm<80?"ช้า":wpm<110?"ค่อนข้างช้า":wpm<=160?"อยู่ในช่วงที่ดี":"เร็วมาก ระวังไม่ชัด"} (เป้า ~110–160)`);
+ if(aud&&sec!=null)talk.push(`หยุดนาน (>1.2 วิ) ${aud.pauses} ครั้ง · เงียบรวม ${aud.tot>0?Math.round(Math.max(0,aud.sil)/aud.tot*100):0}% ของเวลาพูด — ${ppm<1?"ลื่นไหลดี":ppm<2.5?"มีหยุดคิดพอสมควร":"หยุดบ่อย ฟังขาดตอน"}`);
+ if(sec!=null)talk.push(`ความยาว ${Math.round(sec)} วิ จากเป้า ~${TARGET[part]} วิ — ${sec<TARGET[part]*.5?"สั้นเกินไป ขยายด้วยเหตุผล/ตัวอย่าง":sec<TARGET[part]*.8?"สั้นกว่าเป้าเล็กน้อย":"ความยาวเหมาะสม"}`);
+ talk.push(fill?`คำอึกอัก: ${Object.entries(fl).map(([k,v])=>k+" ×"+v).join(", ")}`:"ไม่พบคำอึกอัก 👍");
+ if(rep)talk.push(`พูดคำซ้ำติดกัน ${rep} ครั้ง (เช่น “the the”) ลองหยุดแล้วเริ่มประโยคใหม่`);
+ const tips=[];
+ if(syn.length)tips.push(["🔁 คำที่ใช้ซ้ำ ลองเปลี่ยนเป็น",syn.slice(0,5).map(([k,v])=>`<b>${k}</b> ×${v} → ${SYN[k].slice(0,3).join(", ")}`).join("<br>")]);
+ if(fill)tips.push(["🙊 แทนคำอึกอัก (um/uh) ด้วย","“"+FILLTIP.join("” · “")+"”"]);
+ const miss=Object.keys(CON).filter(g=>!cg[g].length);
+ tips.push(["🔗 คำเชื่อม",(dc?`ที่ใช้แล้ว: ${Object.values(cg).flat().join(", ")}<br>`:"ยังไม่พบคำเชื่อมเด่น ๆ<br>")+(miss.length?"ลองเพิ่ม: "+miss.slice(0,3).map(g=>`<b>${g}</b> (${CON[g].slice(0,3).join(", ")})`).join(" · "):"ใช้ครบทุกประเภทแล้ว 👍")]);
+ if(errs.length)tips.push(["✏️ ไวยากรณ์ที่ควรแก้",errs.join("<br>")]);
+ tips.push(["📚 คำศัพท์ประจำหัวข้อ (สีส้ม = ใช้แล้ว)",topicVoc().map(v=>chip(v,has(v))).join("")]);
+ return{o,s,why,talk,tips,capNote,text};
+}
+function show(r){
+ const el=$("res");el.style.display="block";
+ if(r.err){el.innerHTML=`<h2>ผลลัพธ์</h2><p>${r.err}</p>`;return}
+ const f=v=>v==null?"—":v.toFixed(1);
+ const cell=(t,k)=>`<div>${t}<b>${f(r.s[k])}</b><span class="mu" style="font-size:12px;display:block">${r.why[k]}</span></div>`;
+ el.innerHTML=`<div class="mu">Band โดยประมาณ (ตัดแบบเข้มงวด)</div><div class="band">${r.o.toFixed(1)}</div><div class="mu">ช่วงที่เป็นไปได้ ${(r.o-.5).toFixed(1)} – ${(r.o+.5).toFixed(1)}${r.capNote?" · "+r.capNote:""}</div>
+ <div class="grid">${cell("Fluency","F")}${cell("Lexical","L")}${cell("Grammar","G")}${cell("Pronunciation*","P")}</div>
+ <p class="mu" style="font-size:12px">*ประเมินได้แค่ความชัดคร่าว ๆ (เพดาน 6.5) ไม่ตรวจการเน้นเสียงหรือสำเนียง</p>
+ <h2 style="margin-top:14px">🗣 การพูดของคุณเป็นยังไง</h2><ul>${r.talk.map(x=>`<li>${x}</li>`).join("")}</ul>
+ ${r.tips.map(t=>`<h2 style="margin-top:14px">${t[0]}</h2><div>${t[1]}</div>`).join("")}
+ <details style="margin-top:14px"><summary class="mu">ℹ️ คะแนนมาจากไหน</summary><div class="mu" style="margin-top:6px">• ระดับเสียงจากไมค์ → ความเร็ว การหยุดนาน ความเงียบ (Fluency)<br>• ข้อความจากตัวถอดเสียง → คำอึกอัก ความหลากหลายของคำ คำพื้นฐาน/วลีเด่น คำเชื่อม โครงสร้างประโยค รูปแบบผิดที่พบบ่อย (Lexical, Grammar)<br>• ความมั่นใจของตัวถอดเสียง → Pronunciation (ประมาณการ)<br>• ทั้งหมดเป็นสูตรกับลิสต์คำที่ตั้งไว้ ไม่ใช่ AI และตัวถอดเสียงมักแก้ไวยากรณ์ให้เอง การตรวจข้อผิดจึงแม่นกว่าเมื่อประเมินจากข้อความที่พิมพ์เอง</div></details>
+ <div class="mu" style="margin-top:10px">ข้อความที่ระบบใช้:</div><div class="tx">${esc(r.text)}</div>`;
+}
+
+pick();
+</script></body></html>
